@@ -10,7 +10,6 @@ import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-// Mock customer data - in a real app, this would come from an API
 const customerData = {
   1: {
     name: "David Abiola",
@@ -48,7 +47,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
     console.log("Updating customer:", formData)
     router.push("/customers")
   }
@@ -56,18 +54,16 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
   return (
     <DashboardLayout pageTitle="Edit Customer Profile">
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <Link href="/customers">
-            <button className="flex items-center gap-2 text-slate-600 hover:text-slate-900">
+            <button className="flex items-center gap-2 text-slate-600 hover:text-slate-900 cursor-pointer">
               <ChevronLeft size={20} />
               Back
             </button>
           </Link>
         </div>
 
-        {/* Form Card */}
-        <Card className="p-8 max-w-2xl">
+        <Card className="p-8 max-w-2xl mx-auto">
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
               <User size={32} className="text-red-500" />
@@ -76,7 +72,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">Name</label>
               <input
@@ -88,7 +83,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
               />
             </div>
 
-            {/* Location */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">Location</label>
               <input
@@ -100,7 +94,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
               />
             </div>
 
-            {/* Contact */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">Contact</label>
               <input
@@ -112,7 +105,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
               />
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">Email</label>
               <input
@@ -124,7 +116,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
               />
             </div>
 
-            {/* Identification Type */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">Identification Type</label>
               <input
@@ -136,7 +127,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
               />
             </div>
 
-            {/* ID Number */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">ID Number</label>
               <input
@@ -148,7 +138,6 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
               />
             </div>
 
-            {/* Current Balance */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">Current Balance</label>
               <input
@@ -160,9 +149,9 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
               />
             </div>
 
-            {/* Submit Button */}
             <Button
               type="submit"
+              size="lg"
               className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold"
             >
               Add Customer
