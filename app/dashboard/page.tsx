@@ -4,36 +4,25 @@ import { useState } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { StatCard } from "@/components/stat-card"
 import { SalesTrendChart } from "@/components/sales-trend-chart"
-import { DebtorsTable } from "@/components/debtors-table"
-import { Users, Fuel, TrendingUp } from "lucide-react"
+import { DebtorsTable } from "@/components/tables/debtors-table"
 
 export default function DashboardPage() {
   const [trendType, setTrendType] = useState<"sales" | "revenue">("sales")
 
   return (
-    <DashboardLayout>
+    <DashboardLayout pageTitle="Dashboard">
       <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-        </div>
-
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <StatCard icon={Users} label="Total Customers Registered" value="24" />
-          <StatCard icon={Fuel} label="Total Diesel Sold (Litres)" value="5,042" />
-          <StatCard icon={TrendingUp} label="Total Revenue (₦)" value="2,400,000" />
+          <StatCard icon="/svg/people.svg" label="Total Customers Registered" value="24" />
+          <StatCard icon="/svg/group.svg" label="Total Diesel Sold (Litres)" value="5,042" badge="This Month" />
+          <StatCard icon="/svg/money-receive.svg" label="Total Revenue (₦)" value="2,400,000" badge="This Month" />
         </div>
 
-        {/* Charts and Debtors */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Sales/Revenue Trend Chart */}
-          <div className="lg:col-span-2">
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-3">
             <SalesTrendChart trendType={trendType} setTrendType={setTrendType} />
           </div>
-
-          {/* Debtors Table */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <DebtorsTable />
           </div>
         </div>

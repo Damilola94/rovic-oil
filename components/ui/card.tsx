@@ -2,6 +2,7 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -81,11 +82,24 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+function CardStat ({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        'bg-card text-card-foreground flex  gap-6 rounded-xl border py-6',
+        className,
+      )}
+      {...props}
+    />
+  )
+}
 export {
   Card,
   CardHeader,
   CardFooter,
   CardTitle,
+  CardStat,
   CardAction,
   CardDescription,
   CardContent,

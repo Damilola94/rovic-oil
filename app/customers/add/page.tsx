@@ -43,7 +43,7 @@ export default function AddCustomerPage() {
 
   if (submitted) {
     return (
-      <DashboardLayout>
+      <DashboardLayout pageTitle="Add Customer">
         <div className="flex flex-col items-center justify-center min-h-[600px] space-y-6">
           <div className="flex items-center justify-center w-24 h-24 rounded-full bg-accent/10">
             <CheckCircle2 size={64} className="text-accent" />
@@ -59,17 +59,12 @@ export default function AddCustomerPage() {
 
   return (
     <DashboardLayout>
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 cursor-pointer">
+        <ChevronLeft className="w-5 h-5" />
+        Back
+      </button>
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <button onClick={() => router.back()} className="p-2 hover:bg-slate-100 rounded-lg transition">
-            <ChevronLeft size={20} className="text-slate-600" />
-          </button>
-        </div>
-
-        {/* Form Container */}
         <div className="bg-white rounded-lg p-8 space-y-6">
-          {/* Icon and Title */}
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
               <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +75,6 @@ export default function AddCustomerPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Type of Customer */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Type of Customer</label>
               <div className="relative">
@@ -105,7 +99,6 @@ export default function AddCustomerPage() {
               )}
             </div>
 
-            {/* Name */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Name</label>
               <input
@@ -118,7 +111,6 @@ export default function AddCustomerPage() {
               />
             </div>
 
-            {/* Location */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Location</label>
               <input
@@ -131,7 +123,6 @@ export default function AddCustomerPage() {
               />
             </div>
 
-            {/* Phone Number */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
               <input
@@ -144,7 +135,6 @@ export default function AddCustomerPage() {
               />
             </div>
 
-            {/* Email Address */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
               <input
@@ -157,7 +147,6 @@ export default function AddCustomerPage() {
               />
             </div>
 
-            {/* Is there a parent company? */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Is there a parent company?</label>
               <div className="relative">
@@ -177,7 +166,6 @@ export default function AddCustomerPage() {
               </div>
             </div>
 
-            {/* Parent Company Selection - Conditional */}
             {formData.hasParentCompany === "Yes" && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -208,7 +196,6 @@ export default function AddCustomerPage() {
                     </button>
                   </div>
 
-                  {/* Dropdown Menu */}
                   {showParentDropdown && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-10">
                       {parentCompanies.map((company) => (
@@ -219,11 +206,10 @@ export default function AddCustomerPage() {
                             handleSelectChange("parentCompany", company)
                             setShowParentDropdown(false)
                           }}
-                          className={`w-full text-left px-4 py-3 hover:bg-slate-50 transition ${
-                            formData.parentCompany === company
+                          className={`w-full text-left px-4 py-3 hover:bg-slate-50 transition ${formData.parentCompany === company
                               ? "bg-accent/10 text-accent font-medium"
                               : "text-slate-700"
-                          }`}
+                            }`}
                         >
                           {company}
                         </button>
@@ -234,7 +220,6 @@ export default function AddCustomerPage() {
               </div>
             )}
 
-            {/* Submit Button */}
             <Button
               type="submit"
               className="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 rounded-lg mt-8"

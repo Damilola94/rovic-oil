@@ -8,9 +8,8 @@ import Link from "next/link"
 
 export default function CustomerProfilePage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout pageTitle="Customer Profile">
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <Link href="/customers">
             <Button variant="ghost" size="sm" className="gap-2">
@@ -21,7 +20,6 @@ export default function CustomerProfilePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Customer Profile */}
           <Card className="lg:col-span-1 p-6">
             <h2 className="text-xl font-bold mb-6">Customer Profile</h2>
 
@@ -58,7 +56,6 @@ export default function CustomerProfilePage() {
             </div>
           </Card>
 
-          {/* Transaction History */}
           <Card className="lg:col-span-2 p-6">
             <h2 className="text-xl font-bold mb-6">Transaction History</h2>
 
@@ -95,7 +92,6 @@ export default function CustomerProfilePage() {
               </table>
             </div>
 
-            {/* Pagination */}
             <div className="flex items-center justify-between mt-6">
               <span className="text-sm text-slate-500">Page 1 of 10</span>
               <div className="flex gap-2">

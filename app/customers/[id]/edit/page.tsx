@@ -54,7 +54,7 @@ export default function EditCustomerPage({ params }: { params: { id: string } })
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout pageTitle="Edit Customer Profile">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">

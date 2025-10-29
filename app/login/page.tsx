@@ -19,22 +19,21 @@ export default function LoginPage() {
   return (
     <div className="relative flex h-screen w-full bg-black text-white overflow-hidden">
       <Image
-        src="/images/login-bg.png" 
+        src="/images/login-bg.png"
         alt="Background"
         fill
         className="md:-ml-40 md:mt-20 object-left"
-        priority
       />
       <div className="flex flex-col justify-center pl-12 z-10 w-1/2">
         <Image
-          src="/logo/rovic-logo-white.png" 
+          src="/logo/rovic-logo-white.png"
           alt="Rovic Oil & Gas Logo"
           width={180}
           height={60}
           className="mb-56"
         />
-        <h1 className="text-5xl font-semibold mb-4">Welcome Back,</h1>
-        <p className="text-2xl text-gray-300">Administrator</p>
+        <p className="text-4xl">Welcome Back,</p>
+        <p className="text-4xl text-gray-300">Administrator</p>
       </div>
 
       <div className="flex items-center justify-center w-1/2 z-10 pr-12">
@@ -81,9 +80,15 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-[#F25C3C] hover:bg-[#e45032] text-white font-medium py-5 rounded-xl mt-4 transition-colors"
+              size="lg"
+              className="w-full bg-[#F25C3C] hover:bg-[#e45032] text-white font-medium py-5 rounded-xl mt-4 transition-colors flex items-center justify-center"
             >
-              Login →
+              Login
+              <Image
+                src="/svg/arrow-right.svg"
+                alt="Rovic Oil & Gas Logo"
+                width={20} height={20}
+              />
             </Button>
           </form>
         </div>
