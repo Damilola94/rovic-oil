@@ -1,7 +1,7 @@
 "use client"
 
 import { SetStateAction, useState } from "react"
-import { X } from "lucide-react"
+import { Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "../ui/input"
 
@@ -9,9 +9,12 @@ interface RefillStockModalProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: (amount: string) => void
+  isLoading?: boolean
 }
 
-export function RefillStockModal({ isOpen, onClose, onConfirm }: RefillStockModalProps) {
+export function RefillStockModal({ isOpen, onClose, onConfirm,
+  isLoading = false,
+}: RefillStockModalProps) {
   const [amount, setAmount] = useState("")
 
   if (!isOpen) return null
@@ -40,8 +43,8 @@ export function RefillStockModal({ isOpen, onClose, onConfirm }: RefillStockModa
 
         <div className="space-y-4">
           <Input
-            type="number"
-            placeholder="Search Customer"
+            type="money"
+            placeholder="Enter amount to add"
             value={amount}
             onChange={(e: { target: { value: SetStateAction<string> } }) => setAmount(e.target.value)}
             className="w-full"
@@ -52,7 +55,14 @@ export function RefillStockModal({ isOpen, onClose, onConfirm }: RefillStockModa
             disabled={!amount.trim()}
             className="w-full bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add Stock
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Add Stock"
+            )}
           </Button>
         </div>
       </div>

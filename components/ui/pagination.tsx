@@ -152,7 +152,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={cn(
-            "px-3 py-1 rounded border border-slate-200 hover:bg-slate-50 text-sm transition-colors",
+            "px-3 py-1 rounded border cursor-pointer border-slate-200 hover:bg-slate-50 text-sm transition-colors",
             currentPage === 1 && "opacity-50 cursor-not-allowed"
           )}
         >
@@ -164,7 +164,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
             key={page}
             onClick={() => onPageChange(page)}
             className={cn(
-              "px-3 py-1 rounded text-sm border border-slate-200 transition-colors",
+              "px-3 py-1 rounded text-sm border border-slate-200 transition-colors cursor-pointer",
               currentPage === page
                 ? "bg-slate-900 text-white border-slate-900"
                 : "hover:bg-slate-50"

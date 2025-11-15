@@ -1,33 +1,70 @@
+"use client"
+
 import { CardStat } from "@/components/ui/card"
 import type { LucideIcon } from "lucide-react"
 import Image from "next/image"
+import { useState } from "react"
+import { ChevronDown } from "lucide-react"
 
 interface StatCardProps {
   icon: LucideIcon | string
   label: string
-  value: string | number
+  value: number | undefined | string | React.ReactNode
   badge?: string
   badgeDown?: string
+  badgeOptions?: string[]
   badgeColor?: string
-  onClick?: () => void;
+  onClick?: () => void
+  onBadgeChange?: (selected: string) => void
 }
 
-export function StatCard({ icon, label, value, badge, badgeDown, badgeColor, onClick }: StatCardProps) {
+export function StatCard({
+  icon,
+  label,
+  value,
+  badge,
+  badgeDown,
+  onClick,
+  badgeOptions = ["This Week", "This Month", "This Year"],
+  badgeColor,
+  onBadgeChange,
+}: StatCardProps) {
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [selectedBadge, setSelectedBadge] = useState(badge || badgeOptions[0])
+
+  const handleSelect = (option: string) => {
+    setSelectedBadge(option)
+    setShowDropdown(false)
+    onBadgeChange?.(option)
+  }
+
   return (
     <CardStat className="relative flex rounded-2xl border border-[#CCCCCC] bg-white px-3 py-4 justify-between">
-      {badge && (
-        <span className="absolute top-2 right-2 rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 cursor-pointer">
-          {badge}
-        </span>
-      )}
+      {badge && <div className="absolute right-2">
+        <button
+          onClick={() => setShowDropdown(!showDropdown)}
+          className={`flex items-center gap-1 px-1 py-0.5 rounded-md text-[10px] font-medium cursor-pointer border ${badgeColor ? "text-red-400 border-red-500" : "text-slate-600 border-slate-200 bg-slate-50"
+            }`}
+        >
+          {selectedBadge}
+          <ChevronDown size={12} />
+        </button>
 
-      {badgeDown && (
-        <span className={`absolute bottom-2 right-2 rounded-md  cursor-pointer   px-2 py-0.5 text-[10px] font-medium  ${badgeColor ? "text-red-400 border border-red-500" : "text-slate-600 border border-slate-200 bg-slate-50"}`}
-          onClick={onClick}>
-          {badgeDown}
-        </span>
-      )}
-
+        {showDropdown && (
+          <div className="absolute right-0 mt-1 w-36 bg-white border border-slate-200 rounded-lg shadow-lg z-10">
+            {badgeOptions.map((option) => (
+              <button
+                key={option}
+                onClick={() => handleSelect(option)}
+                className="w-full text-left px-4 py-2 text-xs cursor-pointer hover:bg-slate-50"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>}
+      {badgeDown && (<span className={`absolute bottom-2 right-2 rounded-md cursor-pointer px-1 py-0.5 text-[8px] font-medium ${badgeColor ? "text-red-400 border border-red-500" : "text-slate-600 border border-slate-200 bg-slate-50"}`} onClick={onClick}> {badgeDown} </span>)}
       <div className="flex items-center gap-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
           <Image

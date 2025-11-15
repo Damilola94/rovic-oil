@@ -17,6 +17,7 @@ import Image from "next/image"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { LogoutModal } from "@/components/modals/logout-modal"
+import { logout } from "@/services/auth"
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -35,7 +36,9 @@ export function Sidebar() {
   const handleLogout = () => {
     console.log("User logged out")
     setIsLogoutModalOpen(false)
+    logout()
   }
+  
   return (
     <div
       className={cn(

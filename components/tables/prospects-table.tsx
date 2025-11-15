@@ -2,37 +2,67 @@
 
 import { Card } from "@/components/ui/card"
 import { useState, useMemo } from "react"
-import { Trash2 } from "lucide-react"
+import Image from "next/image"
+import { useMutation, useQueryClient } from "react-query"
+import { toast } from "react-toastify"
+import handleFetch from "@/services/api/handleFetch";
 import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal"
 import { Pagination } from "../ui/pagination"
-import { customers } from "@/app/constant/data"
-import Image from "next/image"
 
-export function ProspectsTable({ selectedLetter }: { selectedLetter: string | null }) {
+interface Prospect {
+  id: string
+  phoneNumber: string
+}
+
+interface ProspectsTableProps {
+  data: Prospect[]
+  selectedLetter: string | null
+}
+
+export function ProspectsTable({ data, selectedLetter }: ProspectsTableProps) {
   const [currentPage, setCurrentPage] = useState(1)
+  const queryClient = useQueryClient();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null)
-
+  const [selectedProspectId, setSelectedProspectId] = useState<string | null>(null)
   const itemsPerPage = 10
 
-  const filteredCustomers = useMemo(() => {
-    if (!selectedLetter) return customers
-    return customers.filter((c) =>
-      c.name.toLowerCase().startsWith(selectedLetter.toLowerCase())
+  const filteredProspects = useMemo(() => {
+    if (!selectedLetter) return data
+    return data.filter((p) =>
+      p.phoneNumber.toLowerCase().startsWith(selectedLetter.toLowerCase())
     )
-  }, [selectedLetter])
+  }, [selectedLetter, data])
 
-  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredProspects.length / itemsPerPage)
+  const paginatedProspects = filteredProspects.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
-  const handleDeleteClick = (customerId: number) => {
-    setSelectedCustomerId(customerId)
+  const deleteMutation = useMutation(handleFetch, {
+    onSuccess: (res: any) => {
+      toast.success(res?.message || "Prospect deleted successfully.")
+      setDeleteModalOpen(false)
+      setSelectedProspectId(null)
+      queryClient.invalidateQueries(["prospects"]);
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to delete prospect. Please try again.")
+    },
+  })
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedProspectId(id)
     setDeleteModalOpen(true)
   }
 
   const handleConfirmDelete = () => {
-    console.log("Deleting customer:", selectedCustomerId)
-    setDeleteModalOpen(false)
-    setSelectedCustomerId(null)
+    if (!selectedProspectId) return
+    deleteMutation.mutate({
+      endpoint: `prospects/${selectedProspectId}`,
+      method: "DELETE",
+      auth: true,
+    })
   }
 
   return (
@@ -47,29 +77,33 @@ export function ProspectsTable({ selectedLetter }: { selectedLetter: string | nu
                 <th className="px-6 py-4 text-right w-[20%]"></th>
               </tr>
             </thead>
-
             <tbody>
-              {filteredCustomers.map((customer) => (
+              {paginatedProspects.map((prospect, index) => (
                 <tr
-                  key={customer.id}
+                  key={prospect.id}
                   className="border-b hover:bg-slate-50 transition-colors cursor-pointer"
                 >
-                  <td className="px-6 py-4 text-left">{customer.id}</td>
-                  <td className="px-6 py-4 text-left">{customer.phone}</td>
+                  <td className="px-6 py-4">  {(currentPage - 1) * itemsPerPage + (index + 1)}</td>
+                  <td className="px-6 py-4">{prospect.phoneNumber}</td>
                   <td className="px-6 py-4 text-right">
                     <button
-                      onClick={() => handleDeleteClick(customer.id)}
-                      className="text-red-600 hover:text-red-800 transition-colors cursor-pointer"
+                      onClick={() => handleDeleteClick(prospect.id)}
+                      disabled={deleteMutation.isLoading}
+                      className="text-red-600 hover:text-red-800 transition-colors cursor-pointer disabled:opacity-50"
                     >
-                      <Image
-                        src="/svg/bin.svg"
-                        alt="Bin Icon"
-                        width={14} height={14}
-                      />
+                      <Image src="/svg/bin.svg" alt="Bin Icon" width={14} height={14} />
                     </button>
                   </td>
                 </tr>
               ))}
+
+              {paginatedProspects.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="py-8 text-center text-sm text-muted-foreground">
+                    No prospects found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 
@@ -85,6 +119,7 @@ export function ProspectsTable({ selectedLetter }: { selectedLetter: string | nu
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+        isLoading={deleteMutation.isLoading}
       />
     </>
   )
