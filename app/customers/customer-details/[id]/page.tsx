@@ -20,7 +20,10 @@ export default function CustomerProfilePage() {
   })
 
   const { data: transactionsData, isLoading: loadingTransactions } = useGetQuery({
-    endpoint: `transactions/${customerId}`,
+    endpoint: `transactions`,
+    pQuery: {
+      customerId: customerId
+    },
     queryKey: ["customer-transactions", customerId],
     auth: true,
   })

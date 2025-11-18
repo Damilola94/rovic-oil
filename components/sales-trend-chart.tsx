@@ -39,7 +39,6 @@ export function SalesTrendChart({
 
   return (
     <div>
-      {/* Trend type buttons */}
       <div className="flex items-center justify-between mb-4 w-full relative">
         <div className="flex gap-4 border-b border-slate-200 pb-2 w-full">
           <button
@@ -69,7 +68,6 @@ export function SalesTrendChart({
       <Card className="p-3 rounded-4xl border-0 bg-[#F3F4F6]">
         <Card className="p-4 rounded-4xl border-0 border-slate-200 bg-white">
           <div className="flex justify-between items-center mb-4">
-            {/* Dropdown for trend period */}
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
@@ -101,7 +99,6 @@ export function SalesTrendChart({
             </p>
           </div>
 
-          {/* Chart */}
           {isLoading ? (
             <div className="h-[300px] flex items-center justify-center text-slate-400 text-sm">
               Loading {trendType} data...

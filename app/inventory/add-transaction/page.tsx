@@ -80,9 +80,10 @@ export default function AddTransactionPage() {
       formData.paymentType === "Full Payment"
         ? parseNumber(totalAmount)
         : parseNumber(formData.amountPaid)
+    console.log(formData.typeOfUser, formData.customer, formData.quantity, formData.pricePerLiter, formData.paymentType);
 
     if (
-      !formData.typeOfUser ||
+      // !formData.typeOfUser ||
       !formData.customer ||
       !formData.quantity ||
       !formData.pricePerLiter ||
@@ -190,7 +191,7 @@ export default function AddTransactionPage() {
 
           <Input
             label="Price per Liter (₦)"
-            type="text"
+            type="money"
             placeholder="Enter price per liter"
             value={formData.pricePerLiter}
             onChange={(e) => handleInputChange("pricePerLiter", e.target.value)}
@@ -206,7 +207,7 @@ export default function AddTransactionPage() {
             placeholder="Select payment type"
           />
 
-          {formData.paymentType !== "Full Payment" && (
+          {formData.paymentType == "Part Payment" && (
             <div className="space-y-6">
               <Input
                 label="Amount Paid (₦)"

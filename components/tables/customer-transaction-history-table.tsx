@@ -3,13 +3,14 @@
 import { useState } from "react"
 import { Card } from "../ui/card"
 import { Pagination } from "../ui/pagination"
+import moment from "moment-timezone"
 
 interface Transaction {
-    date: string
-    qty: number
-    price: number
-    total: number
-    balance: number | string
+    createdAtUtc: string
+    salesQuantityLitres: number
+    pricePerLitre: number
+    totalAmount: number
+    balanceAfterTransaction: number | string
 }
 
 interface TransactionHistoryTableProps {
@@ -42,11 +43,20 @@ export function TransactionHistoryTable({ transactions }: TransactionHistoryTabl
                                     key={idx}
                                     className="border-b border-border hover:bg-muted/50 cursor-pointer transition-colors"
                                 >
-                                    <td className="px-4 py-4">{row.date}</td>
-                                    <td className="px-4 py-4">{row.qty}</td>
-                                    <td className="px-4 py-4">{row.price}</td>
-                                    <td className="px-4 py-4">{row.total}</td>
-                                    <td className="px-4 py-4">{row.balance}</td>
+                                    <td className="px-4 py-4">    {moment(row.createdAtUtc).format("MM/DD/YYYY") || "—"}</td>
+                                    <td className="px-4 py-4">{row.salesQuantityLitres}</td>
+                                    <td className="px-4 py-4">{row.pricePerLitre}</td>
+                                    <td className="px-4 py-4">{row.totalAmount}</td>
+                                    <td
+                                        className={`px-4 py-4 font-semibold ${Number(row?.balanceAfterTransaction) < 0
+                                                ? "text-red-500"
+                                                : row?.balanceAfterTransaction === null
+                                                    ? "text-slate-500"
+                                                    : "text-green-500"
+                                            }`}
+                                    >
+                                        {row?.balanceAfterTransaction}
+                                    </td>
                                 </tr>
                             ))
                         ) : (

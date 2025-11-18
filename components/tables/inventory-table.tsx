@@ -62,12 +62,7 @@ export function InventoryTable({ selectedLetter, data, isLoading }: InventoryTab
                         {moment(transaction.createdAtUtc).format("MM/DD/YYYY") || "—"}
                     </td>
                     <td className="px-4 py-4">
-                      <Link
-                        href={`/customer/${transaction?.stockId}`}
-                        className="hover:underline"
-                      >
                         {transaction?.customerName}
-                      </Link>
                     </td>
                     <td className="px-4 py-4 max-w-[150px] truncate">{transaction?.customerAddress || "—"}</td>
                     <td className="px-4 py-4">

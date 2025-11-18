@@ -8,11 +8,16 @@ import { DebtorsTable } from "@/components/tables/debtors-table"
 import useGetQuery from "@/hooks/useGetQuery"
 import { Loader2 } from "lucide-react"
 import { formatAmount } from "@/lib/utils"
+interface TrendItem {
+  label: string
+  litresSold: number
+  revenue: number
+}
 
 export default function DashboardPage() {
   const [trendType, setTrendType] = useState<"sales" | "revenue">("sales")
-  const [metricsPeriod, setMetricsPeriod] = useState<"ThisWeek" | "ThisMonth" | "ThisYear">("ThisWeek")
-  const [trendPeriod, setTrendPeriod] = useState<"Weekly" | "Monthly" | "Yearly">("Weekly")
+  const [metricsPeriod, setMetricsPeriod] = useState<"ThisWeek" | "ThisMonth" | "ThisYear">("ThisYear")
+  const [trendPeriod, setTrendPeriod] = useState<"Weekly" | "Monthly" | "Yearly">("Yearly")
 
   const {
     data: metricsData,
@@ -65,18 +70,32 @@ export default function DashboardPage() {
     totalLitresSold: 0,
     totalRevenue: 0,
   }
-  const normalizedSalesData = {
 
-    label: salesTrendData?.["0"].label,
-    value: salesTrendData?.["0"].litresSold
-  }
+  const convertedSalesData = Array.isArray(salesTrendData)
+    ? (salesTrendData as TrendItem[]).map(item => ({
+      day: item.label,
+      value: item.litresSold
+    }))
+    : Object.values(salesTrendData || [])
+      .filter((x): x is TrendItem => typeof x === "object" && x !== null)
+      .map(item => ({
+        day: item.label,
+        value: item.litresSold
+      })) || []
 
-  // const normalizedRevenueData = revenueTrendData?.["0"]?.map((item: any) => ({
-  //   label: item.label,
-  //   value: item.revenue || item.amount || 0,
-  // })) || []
+  const convertedRevenueData = Array.isArray(revenueTrendData)
+    ? (revenueTrendData as TrendItem[]).map(item => ({
+      day: item.label,
+      value: item.revenue
+    }))
+    : Object.values(revenueTrendData || [])
+      .filter((x): x is TrendItem => typeof x === "object" && x !== null)
+      .map(item => ({
+        day: item.label,
+        value: item.revenue
+      })) || []
 
-  console.log(normalizedSalesData, salesTrendData);
+console.log(convertedRevenueData, "convertedRevenueData",revenueTrendData);
 
 
   return (
@@ -94,11 +113,11 @@ export default function DashboardPage() {
           />
           <StatCard
             icon="/svg/group.svg"
-            label="Total Diesel Sold (Litres)"
+            label="Total Diesel Sold (Ltr.)"
             value={
               isLoading
                 ? <Loader2 className="h-5 w-5 animate-spin" />
-                : metrics.totalLitresSold || "0"
+                : formatAmount(metrics.totalLitresSold, "") || "0"
             }
             badge={metricsPeriod === "ThisWeek" ? "This Week" : metricsPeriod === "ThisMonth" ? "This Month" : "This Year"}
             badgeOptions={["This Week", "This Month", "This Year"]}
@@ -133,8 +152,8 @@ export default function DashboardPage() {
               setTrendPeriod={setTrendPeriod}
               data={
                 trendType === "sales"
-                  ? salesTrendData?.data || []
-                  : revenueTrendData?.data || []
+                  ? convertedSalesData || []
+                  : convertedRevenueData || []
               }
               isLoading={
                 trendType === "sales"

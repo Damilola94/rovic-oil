@@ -7,8 +7,10 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import useGetQuery from "@/hooks/useGetQuery";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf"; 
+import useDownloadPdf from "@/hooks/useDownloadPdf";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
+import handleFetch from "@/services/api/handleFetch";
 
 export default function PreviewQuotationPage() {
   const router = useRouter();
@@ -21,87 +23,71 @@ export default function PreviewQuotationPage() {
   });
 
   const quotationData = data?.quotationDetails;
-
   const [isSending, setIsSending] = useState(false);
-  const [downloadLoading, setDownloadLoading] = useState(false); 
 
-  const prepareForCapture = async () => {
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
+  const { generatePdfBlob, downloadPdf, loading: downloadLoading } = useDownloadPdf();
 
-    return () => {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-    };
-  };
+  const uploadMutation = useMutation(handleFetch, {
+    onSuccess: () => {
+      sendMutation.mutate({
+        endpoint: `communications/quotations/${id}/send`,
+        method: "POST",
+        auth: true,
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to upload quotation PDF.");
+      setIsSending(false);
+    },
+  });
 
-const handleDownloadPDF = async () => {
-  setDownloadLoading(true);
+  const sendMutation = useMutation(handleFetch, {
+    onSuccess: () => {
+      toast.success("Quotation sent successfully!");
+      router.push("/communications/send-quotation/success");
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to send quotation.");
+    },
+    onSettled: () => setIsSending(false),
+  });
 
-  try {
-    const element = document.getElementById("quotation-content");
-    if (!element) throw new Error("Element not found");
-
-    const jsPdf = new jsPDF("p", "pt", "a4");
-
-    const pageWidth = jsPdf.internal.pageSize.getWidth();
-    const pageHeight = jsPdf.internal.pageSize.getHeight();
-
-    const totalHeight = element.scrollHeight;
-    const viewWidth = element.clientWidth;
-
-    const chunkHeight = 1500; // safe chunk size
-    let currentY = 0;
-
-    while (currentY < totalHeight) {
-      const canvas = await html2canvas(element, {
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        scale: 2,
-        scrollY: -currentY,
-        width: viewWidth,
-        height: chunkHeight,
-        windowWidth: viewWidth,
-        windowHeight: chunkHeight,
+  const handleSendQuotation = async () => {
+    try {
+      setIsSending(true);
+      const blob = await generatePdfBlob({
+        elementId: "quotation-content",
       });
 
-      const imgData = canvas.toDataURL("image/jpeg", 1);
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      if (currentY === 0) {
-        jsPdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-      } else {
-        jsPdf.addPage();
-        jsPdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+      if (!blob) {
+        toast.error("Failed to generate PDF.");
+        setIsSending(false);
+        return;
       }
 
-      currentY += chunkHeight;
+      const formData = new FormData();
+      formData.append("file", blob, `Quotation-${id}.pdf`);
+
+      uploadMutation.mutate({
+        endpoint: `communications/quotations/${id}/upload-pdf`,
+        method: "POST",
+        auth: true,
+        multipart: true,
+        body: formData,
+      });
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate PDF.");
+      setIsSending(false);
     }
-
-    jsPdf.save(`Quotation-${id}.pdf`);
-  } catch (err) {
-    console.error("PDF error:", err);
-  } finally {
-    setDownloadLoading(false);
-  }
-};
-
-
-  const handleSendQuotation = () => {
-    setIsSending(true);
-    setTimeout(() => {
-      router.push("/communications/send-quotation/success");
-    }, 1000);
   };
 
-  // --------------------------------------------------
-  // UI STATE HANDLING
-  // --------------------------------------------------
+
   if (isLoading) {
     return (
       <DashboardLayout pageTitle="Preview Quotation">
-        <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+        <div className="min-h-screen flex items-center justify-center">
           Loading quotation...
         </div>
       </DashboardLayout>
@@ -123,12 +109,9 @@ const handleDownloadPDF = async () => {
     maximumFractionDigits: 2,
   });
 
-  // --------------------------------------------------
-  // MAIN PAGE RETURN
-  // --------------------------------------------------
   return (
     <DashboardLayout pageTitle="Preview Quotation">
-      <div className="">
+      <div>
         <Button
           onClick={() => router.push("/communications")}
           variant="ghost"
@@ -139,8 +122,7 @@ const handleDownloadPDF = async () => {
           Back
         </Button>
 
-        <div className="max-w-4xl mx-auto p-4 sm:p-6">
-          {/* PDF CONTENT */}
+        <div className="a4-preview">
           <div
             id="quotation-content"
             className="rounded-lg border p-6 sm:p-10 mx-auto"
@@ -151,7 +133,6 @@ const handleDownloadPDF = async () => {
               color: "rgb(17,17,17)",
             }}
           >
-            {/* LOGO + ADDRESS */}
             <div className="flex flex-col sm:flex-row justify-between sm:items-start pb-6 border-b border-gray-300 gap-4 mb-6">
               <Image
                 src="/logo/rovic-logo.png"
@@ -169,17 +150,14 @@ const handleDownloadPDF = async () => {
               </div>
             </div>
 
-            {/* TITLE */}
             <h1 className="text-center font-bold mb-4" style={{ fontSize: "18px" }}>
               QUOTATION FOR THE SUPPLY OF {quotationData.quantity} LITERS OF DIESEL
             </h1>
 
-            {/* DESCRIPTION */}
             <p className="mb-6 leading-relaxed text-sm" style={{ color: "rgb(60,60,60)" }}>
               {quotationData.description}
             </p>
 
-            {/* TABLE */}
             <div className="overflow-x-auto">
               <table className="w-full mb-6 border-collapse" style={{ minWidth: "700px" }}>
                 <thead>
@@ -210,7 +188,6 @@ const handleDownloadPDF = async () => {
               </table>
             </div>
 
-            {/* TOTAL */}
             <div className="flex justify-end mb-8">
               <div className="w-40 sm:w-64 text-sm">
                 <div
@@ -223,7 +200,6 @@ const handleDownloadPDF = async () => {
               </div>
             </div>
 
-            {/* WARRANTY */}
             <div className="text-sm space-y-3" style={{ color: "rgb(60,60,60)" }}>
               <p>
                 <span className="font-semibold" style={{ color: "rgb(20,20,20)" }}>
@@ -247,14 +223,16 @@ const handleDownloadPDF = async () => {
             </div>
           </div>
 
-          {/* ACTION BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
             <Button
-              variant="outline"
               size="lg"
-              onClick={handleDownloadPDF}
+              onClick={() =>
+                downloadPdf({
+                  elementId: "quotation-content",
+                  filename: `Quotation-${id}.pdf`,
+                })
+              }
               disabled={downloadLoading}
-              className="border-red-500 text-red-500 hover:bg-red-500 w-full sm:w-auto"
             >
               {downloadLoading ? "Generating PDF..." : "Download PDF"}
             </Button>
@@ -267,6 +245,7 @@ const handleDownloadPDF = async () => {
             >
               {isSending ? "Sending..." : "Send Quotation"}
             </Button>
+
           </div>
         </div>
       </div>

@@ -92,7 +92,7 @@ export default function InventoryPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard
             icon="/svg/people.svg"
-            label="Total Diesel Quantity Added (Litres)"
+            label="Total Diesel Quantity Added (Ltr.)"
             value={
               stockStatus === "loading"
                 ? <Loader2 className="h-5 w-5 animate-spin" />
@@ -104,7 +104,7 @@ export default function InventoryPage() {
           />
           <StatCard
             icon="/svg/truck.svg"
-            label="Total Diesel Sold (Litres)"
+            label="Total Diesel Sold (Ltr.)"
             value={
               stockStatus === "loading"
                 ? <Loader2 className="h-5 w-5 animate-spin" />
@@ -128,7 +128,7 @@ export default function InventoryPage() {
           />
           <StatCard
             icon="/svg/money-receive.svg"
-            label="Total Diesel Remaining (Litres)"
+            label="Total Diesel Left (Ltr.)"
             value={
               stockStatus === "loading"
                 ? <Loader2 className="h-5 w-5 animate-spin" />

@@ -22,14 +22,12 @@ interface Customer {
 export default function SendMessagePage() {
   const router = useRouter();
 
-  // form state
   const [toOption, setToOption] = useState<string>("");
   const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [submitted, setSubmitted] = useState(false);
 
-  // fetch companies/customers
   const { data: companiesData, isLoading: isCompaniesLoading } = useGetQuery({
     endpoint: "customers",
     queryKey: ["customers"],
@@ -39,7 +37,6 @@ export default function SendMessagePage() {
   const companies: Customer[] =
     companiesData?.items?.map((c: any) => ({ label: c.name, value: c.id })) || [];
 
-  // helper: add selected customer to chips
   const handleCustomerSelect = (id: string) => {
     const found = companies.find((c) => c.value === id);
     if (!found) return;
@@ -51,18 +48,14 @@ export default function SendMessagePage() {
     setSelectedCustomers((prev) => prev.filter((c) => c.value !== id));
   };
 
-  // create prospect mutation (prospects/bulk) - used AFTER successful communication when option = New Phone Number
   const createProspectMutation = useMutation(handleFetch, {
     onSuccess: () => {
-      // silent success or optional toast
-      // toast.success("Prospect added");
     },
     onError: (err: { message?: string }) => {
       toast.error(err?.message || "Failed to create prospect(s).");
     },
   });
 
-  // send communication mutation
   const sendCommunicationMutation = useMutation(handleFetch, {
     onSuccess: (res: { message?: string }) => {
       toast.success(res?.message || "Communication sent successfully");
@@ -73,7 +66,6 @@ export default function SendMessagePage() {
     },
   });
 
-  // helper to call prospects/bulk AFTER sending communication
   const createProspect = async (phone: string) => {
     if (!phone) return;
     const prospects = [
@@ -114,11 +106,8 @@ export default function SendMessagePage() {
     }
   };
 
-  // main submit: send communication first, THEN (Option B) create prospect if needed
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // validation
     if (
       (toOption === "Selected Customers" && selectedCustomers.length === 0) ||
       (toOption === "New Phone Number" && !phoneNumber.trim()) ||
@@ -128,11 +117,8 @@ export default function SendMessagePage() {
       toast.error("Please fill in all required fields.");
       return;
     }
-
-    // build payload
     const payload = {
       communication: {
-        // for now we send SMS messages — adapt if you need Email for some targets
         type: "SMS",
         target: buildTargetValue(toOption),
         message,
@@ -143,7 +129,6 @@ export default function SendMessagePage() {
     };
 
     try {
-      // send communication (await so we can create prospect afterwards)
       await new Promise<void>((resolve, reject) => {
         sendCommunicationMutation.mutate(
           {
@@ -159,20 +144,16 @@ export default function SendMessagePage() {
         );
       });
 
-      // Option B: AFTER sending communication, create prospect if New Phone Number selected
       if (toOption === "New Phone Number") {
         try {
           await createProspect(phoneNumber);
-          // optionally notify user
           toast.success("New phone number saved as prospect.");
         } catch (err) {
-          // prospect creation failed — we show an error but do not roll back communication
           console.error("Failed creating prospect after sending communication:", err);
           toast.error("Communication sent but failed to save prospect.");
         }
       }
     } catch (err) {
-      // send communication failed — handled by mutation onError, nothing further
       console.error("Communication send failed:", err);
     }
   };
@@ -187,7 +168,7 @@ export default function SendMessagePage() {
           <h2 className="text-2xl font-bold text-foreground mb-4">Message Sent successfully</h2>
           <Button
             onClick={() => router.push("/communications")}
-            className="text-accent flex hover:text-accent/80 bg-transparent border-0 p-0 text-center mx-auto"
+            className="text-accent flex hover:text-accent/80 hover:bg-transparent bg-transparent border-0 p-0 text-center mx-auto"
           >
             <ChevronLeft size={20} /> Back to Communications
           </Button>
@@ -196,7 +177,6 @@ export default function SendMessagePage() {
     );
   }
 
-  // UI
   return (
     <DashboardLayout pageTitle="Send Message">
       <Button onClick={() => router.back()} variant="ghost" size="sm" className="gap-2">

@@ -114,8 +114,8 @@ export default function SendQuotationPage() {
 
             <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
               <div>
-                <label className="block text-sm font-medium mb-2">Customer's Name</label>
                 <Input
+                label="Customer's Name"
                   type="text"
                   name="customerName"
                   placeholder="Customer's Name"
@@ -125,8 +125,8 @@ export default function SendQuotationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Customer Address</label>
                 <Input
+                label="Customer Address"
                   type="text"
                   name="customerAddress"
                   placeholder="Enter Address"
@@ -148,8 +148,8 @@ export default function SendQuotationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Density</label>
                 <Input
+                label="Density"
                   type="text"
                   name="density"
                   placeholder="Enter Density"
@@ -159,8 +159,8 @@ export default function SendQuotationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Quantity</label>
                 <Input
+                label="Quantity"
                   type="number"
                   name="quantity"
                   placeholder="Enter Quantity"
@@ -170,8 +170,8 @@ export default function SendQuotationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Price</label>
                 <Input
+                label="Price"
                   type="number"
                   name="price"
                   placeholder="Enter Price"
@@ -181,9 +181,9 @@ export default function SendQuotationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Email Address</label>
                 <Input
                   type="email"
+                  label="Email Address"
                   name="emailAddress"
                   placeholder="Customer's Email Address"
                   value={formData.emailAddress}
@@ -206,7 +206,7 @@ export default function SendQuotationPage() {
                 {isLoading ? (
                   <Loader2 className="animate-spin w-5 h-5" />
                 ) : (
-                  "Send Quotation"
+                  "Preview Quotation"
                 )}
               </Button>
             </form>
