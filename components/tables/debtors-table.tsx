@@ -5,6 +5,8 @@ import { CardStat } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreVertical, Send } from "lucide-react"
 import moment from "moment-timezone"
+import { SendReminderModal } from "../modals/send-reminder-modal"
+import Image from "next/image"
 
 interface Debtor {
   customerId: string | number
@@ -19,6 +21,9 @@ interface DebtorsTableProps {
 }
 
 export function DebtorsTable({ data, isLoading }: DebtorsTableProps) {
+  const [reminderModalOpen, setReminderModalOpen] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [selectedDebtor, setSelectedDebtor] = useState<any>(null)
 
   if (isLoading) {
     return <p className="text-sm text-slate-500">Loading debtors...</p>
@@ -31,6 +36,18 @@ export function DebtorsTable({ data, isLoading }: DebtorsTableProps) {
         <p className="text-sm text-slate-500">No debtors found.</p>
       </CardStat>
     </div>
+  }
+
+  const handleSendReminder = async () => {
+    setSending(true)
+    try {
+      console.log("Sending reminder to:")
+      setReminderModalOpen(false)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -64,8 +81,18 @@ export function DebtorsTable({ data, isLoading }: DebtorsTableProps) {
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="gap-2 cursor-pointer">
-                          <Send className="h-4 w-4" />
+                        <DropdownMenuItem className="gap-2 cursor-pointer"
+                          onClick={() => {
+                            setSelectedDebtor(debtor)
+                            setReminderModalOpen(true)
+                          }}
+                        >
+                          <Image
+                            src="/svg/reminder-icon.svg"
+                            alt="Send Reminder Icon"
+                            width={17}
+                            height={17}
+                          />
                           Send Reminder
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -77,6 +104,14 @@ export function DebtorsTable({ data, isLoading }: DebtorsTableProps) {
           </table>
         </div>
       </CardStat>
+      <SendReminderModal
+        isOpen={reminderModalOpen}
+        onClose={() => setReminderModalOpen(false)}
+        onConfirm={handleSendReminder}
+        isLoading={sending}
+        debtorName={selectedDebtor?.customerName}
+
+      />
     </div>
   )
 }

@@ -13,6 +13,8 @@ import { Pagination } from "../ui/pagination"
 import { useMemo, useState } from "react"
 import moment from "moment-timezone"
 import { useRouter } from "next/navigation"
+import { SendReminderModal } from "../modals/send-reminder-modal"
+import Image from "next/image"
 
 interface FinanceDebtorsTableProps {
     data: any[]
@@ -29,8 +31,9 @@ export function FinanceDebtorsTable({
     currentPage,
     onPageChange,
 }: FinanceDebtorsTableProps) {
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-    const [selectedDebtorId, setSelectedDebtorId] = useState<number | null>(null)
+    const [reminderModalOpen, setReminderModalOpen] = useState(false)
+    const [sending, setSending] = useState(false)
+    const [selectedDebtor, setSelectedDebtor] = useState<any>(null)
     const router = useRouter()
 
     const itemsPerPage = 20
@@ -48,11 +51,18 @@ export function FinanceDebtorsTable({
         currentPage * itemsPerPage
     )
 
-    const handleConfirmDelete = () => {
-        console.log("Deleting debtor:", selectedDebtorId)
-        setDeleteModalOpen(false)
-        setSelectedDebtorId(null)
+    const handleSendReminder = async () => {
+        setSending(true)
+        try {
+            console.log("Sending reminder to:")
+            setReminderModalOpen(false)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setSending(false)
+        }
     }
+
 
     return (
         <>
@@ -112,15 +122,31 @@ export function FinanceDebtorsTable({
                                                     </button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer">
-                                                        <Send className="h-4 w-4" />
+                                                    <DropdownMenuItem
+                                                        className="gap-2 cursor-pointer"
+                                                        onClick={() => {
+                                                            setSelectedDebtor(debtor)
+                                                            setReminderModalOpen(true)
+                                                        }}
+                                                    >
+                                                        <Image
+                                                            src="/svg/reminder-icon.svg"
+                                                            alt="Send Reminder Icon"
+                                                            width={17}
+                                                            height={17}
+                                                        />
                                                         Send Reminder
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onClick={() => router.push(`/finance/update-transaction/${debtor.customerId}?customerName=${debtor.customerName}&currentBalance=${debtor.currentBalance}`)}
                                                         className="gap-2 cursor-pointer"
                                                     >
-                                                        <RefreshCw className="h-4 w-4" />
+                                                        <Image
+                                                            src="/svg/update-icon.svg"
+                                                            alt="Send Reminder Icon"
+                                                            width={15}
+                                                            height={15}
+                                                        />
                                                         Update  Balance
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
@@ -151,11 +177,15 @@ export function FinanceDebtorsTable({
                 </div>
             </Card>
 
-            <DeleteConfirmationModal
-                isOpen={deleteModalOpen}
-                onClose={() => setDeleteModalOpen(false)}
-                onConfirm={handleConfirmDelete}
+            <SendReminderModal
+                isOpen={reminderModalOpen}
+                onClose={() => setReminderModalOpen(false)}
+                onConfirm={handleSendReminder}
+                isLoading={sending}
+                debtorName={selectedDebtor?.customerName}
+
             />
+
         </>
     )
 }

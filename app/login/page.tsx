@@ -73,7 +73,7 @@ export default function LoginPage() {
           className="mb-56"
         />
         <p className="text-4xl font-semibold">Welcome Back,</p>
-        <p className="text-4xl text-gray-300">Administrator</p>
+        <p className="text-4xl font-semibold">Administrator</p>
       </div>
 
       <div className="flex items-center justify-center w-full md:w-1/2 z-10 p-6 md:pr-12">
