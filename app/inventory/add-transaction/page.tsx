@@ -62,7 +62,7 @@ export default function AddTransactionPage() {
   const currentBalance = customerData?.balance?.toLocaleString() || "0"
 
   const credit = formData.amountPaid ? parseNumber(formData.amountPaid).toLocaleString() : "0"
-  const debit = formData.amountPaid ? (parseNumber(formData.amountPaid) * 0.433).toFixed(3) : "0"
+  const debit = formData.amountPaid ? (parseNumber(formData.amountPaid)).toFixed(2) : "0"
 
   const addTransactionMutation = useMutation(handleFetch, {
     onSuccess: (res: { message?: string }) => {
@@ -75,15 +75,17 @@ export default function AddTransactionPage() {
   })
 
   const handleSubmit = (e: React.FormEvent) => {
+
     e.preventDefault()
     const computedAmountPaid =
       formData.paymentType === "Full Payment"
         ? parseNumber(totalAmount)
-        : parseNumber(formData.amountPaid)
-    console.log(formData.typeOfUser, formData.customer, formData.quantity, formData.pricePerLiter, formData.paymentType);
+        : formData.paymentType === "On Credit"
+          ? parseNumber(totalAmount)
+          : parseNumber(formData.amountPaid)
 
     if (
-      // !formData.typeOfUser ||
+      !formData.typeOfUser ||
       !formData.customer ||
       !formData.quantity ||
       !formData.pricePerLiter ||
@@ -104,7 +106,7 @@ export default function AddTransactionPage() {
       salesQuantityLitres: parseNumber(formData.quantity),
       pricePerLitre: parseNumber(formData.pricePerLiter),
       paymentType: paymentTypeKey,
-      amountPaid: computedAmountPaid,
+      amountPaid: formData.paymentType === "On Credit" ? 0 : computedAmountPaid,
       repaymentDuration: formData.paymentType !== "Full Payment" ? repaymentDurationKey : undefined,
     }
 

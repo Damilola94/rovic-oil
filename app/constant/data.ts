@@ -9,7 +9,7 @@ export const paymentTypeKeyMap: Record<string, string> = {
 };
 
 export const repaymentDurationsKeyMap: Record<string, string> = {
-  "1 week": "FullPayment",
+  "1 week": "OneWeek",
   "2 weeks": "TwoWeeks",
-  "1 month": "OnCredit",
+  "1 month": "OneMonth",
 };
