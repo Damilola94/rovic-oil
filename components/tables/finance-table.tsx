@@ -32,7 +32,6 @@ export function FinanceDebtorsTable({
     onPageChange,
 }: FinanceDebtorsTableProps) {
     const [reminderModalOpen, setReminderModalOpen] = useState(false)
-    const [sending, setSending] = useState(false)
     const [selectedDebtor, setSelectedDebtor] = useState<any>(null)
     const router = useRouter()
 
@@ -50,19 +49,6 @@ export function FinanceDebtorsTable({
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     )
-
-    const handleSendReminder = async () => {
-        setSending(true)
-        try {
-            console.log("Sending reminder to:")
-            setReminderModalOpen(false)
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setSending(false)
-        }
-    }
-
 
     return (
         <>
@@ -176,14 +162,11 @@ export function FinanceDebtorsTable({
                     />
                 </div>
             </Card>
-
             <SendReminderModal
                 isOpen={reminderModalOpen}
                 onClose={() => setReminderModalOpen(false)}
-                onConfirm={handleSendReminder}
-                isLoading={sending}
                 debtorName={selectedDebtor?.customerName}
-
+                customerId={selectedDebtor?.customerId}
             />
 
         </>

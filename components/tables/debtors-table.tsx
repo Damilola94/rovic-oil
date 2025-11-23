@@ -22,7 +22,6 @@ interface DebtorsTableProps {
 
 export function DebtorsTable({ data, isLoading }: DebtorsTableProps) {
   const [reminderModalOpen, setReminderModalOpen] = useState(false)
-  const [sending, setSending] = useState(false)
   const [selectedDebtor, setSelectedDebtor] = useState<any>(null)
 
   if (isLoading) {
@@ -36,18 +35,6 @@ export function DebtorsTable({ data, isLoading }: DebtorsTableProps) {
         <p className="text-sm text-slate-500">No debtors found.</p>
       </CardStat>
     </div>
-  }
-
-  const handleSendReminder = async () => {
-    setSending(true)
-    try {
-      console.log("Sending reminder to:")
-      setReminderModalOpen(false)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setSending(false)
-    }
   }
 
   return (
@@ -107,10 +94,8 @@ export function DebtorsTable({ data, isLoading }: DebtorsTableProps) {
       <SendReminderModal
         isOpen={reminderModalOpen}
         onClose={() => setReminderModalOpen(false)}
-        onConfirm={handleSendReminder}
-        isLoading={sending}
         debtorName={selectedDebtor?.customerName}
-
+        customerId={selectedDebtor?.customerId}
       />
     </div>
   )

@@ -3,45 +3,69 @@
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { Loader2 } from "lucide-react"
-
+import handleFetch from "@/services/api/handleFetch"
+import { useMutation } from "react-query"
+import { toast } from "react-toastify";
 interface SendReminderModalProps {
   isOpen: boolean
   onClose: () => void
-  onConfirm: () => void
   isLoading?: boolean
   debtorName?: string
+  customerId?: string
 }
 
 export function SendReminderModal({
   isOpen,
   onClose,
-  onConfirm,
-  isLoading = false,
+  customerId = "",
   debtorName = "",
 }: SendReminderModalProps) {
   if (!isOpen) return null
+
+  const reminderMutation = useMutation(handleFetch, {
+    onSuccess: (res: any) => {
+      toast.success(res?.message || "Reminder sent successfully")
+      onClose()
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Unable to send reminder")
+    },
+  })
+
+  const handleSendReminder = () => {
+    if (!customerId) {
+      toast.error("Missing customer ID")
+      return
+    }
+    reminderMutation.mutate({
+      endpoint: "transactions",
+      extra: `debtors/${customerId}/send-reminder`,
+      // pQuery: { customerId: customerId },
+      method: "POST",
+      auth: true,
+      body: { customerId },
+    })
+  }
+
+  const isLoading = reminderMutation.isLoading
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 shadow-lg">
         <div className="flex flex-col items-center gap-4">
-
           <Image
             src="/svg/reminder-icon.svg"
             alt="Send Reminder Icon"
             width={50}
             height={50}
           />
-
           <h2 className="text-xl font-semibold text-slate-900 text-center">
             Send Payment Reminder?
           </h2>
-
           <p className="text-center text-slate-600 text-sm px-2">
             You are about to send a payment reminder to{" "}
             <span className="font-semibold">{debtorName}</span>.
           </p>
-
           <div className="flex gap-3 w-full pt-4">
             <Button
               variant="outline"
@@ -51,9 +75,8 @@ export function SendReminderModal({
             >
               Cancel
             </Button>
-
             <Button
-              onClick={onConfirm}
+              onClick={handleSendReminder}
               disabled={isLoading}
               className="flex-1 bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2"
             >
